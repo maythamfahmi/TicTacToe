@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -17,21 +13,21 @@ namespace TicTacToe
     /// </summary>
     public partial class MainWindow : Window
     {
-        private int BoardSize = 4;
+        private int BoardSize = 3;
         private int BrickSize = 75;
         private int BrickSpace = 10;
-        private Player.Name turn;
-        private bool GameStart = true;
+        private bool GameStart = false;
         private bool GameEnd = false;
-
+        private Player.Name turn;
+        private Shape Brick { get; set; }
+        Player.State[,] boardState;
+                private string BoardBackgroundColor = "#FFFFFF";
+        private string BrickFillColor = "#FFFFFF";
+        private string BrickBorderColor = "#000000";
         private BitmapImage empty = new BitmapImage(new Uri(@"C:\\dev\\Projects\\TicTacToe\\TicTacToe\\Resources\\empty.png"));
         private BitmapImage x = new BitmapImage(new Uri(@"C:\\dev\\Projects\\TicTacToe\\TicTacToe\\Resources\\x.png"));
         private BitmapImage o = new BitmapImage(new Uri(@"C:\\dev\\Projects\\TicTacToe\\TicTacToe\\Resources\\o.png"));
-        private BitmapImage bg = new BitmapImage(new Uri(@"C:\\dev\\Projects\\TicTacToe\\TicTacToe\\Resources\\bg.png"));
-
-        private Shape Brick { get; set; }
-        Player.State[,] boardState;
-
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -45,6 +41,7 @@ namespace TicTacToe
         {
             GameStart = true;
             Init();
+            ShowPlayerTurn();
         }
 
         private void Init()
@@ -55,7 +52,7 @@ namespace TicTacToe
             player2.Source = o;
             GameEnd = false;
             turn = Player.Name.Player1;
-            ShowPlayerTurn();
+            ShowPlayerTurn("Click on Button and start New Game");
         }
 
         void OnMouseButtonUp(object sender, MouseButtonEventArgs e)
@@ -68,8 +65,8 @@ namespace TicTacToe
             int i = pos[0];
             int j = pos[1];
 
-            //todo: Make color global
-            if (shape.Fill.ToString() == "#FF0000FF")
+            if (HexToSolidColor(shape.Fill.ToString()).ToString() ==
+                HexToSolidColor(BrickFillColor).ToString())
             {
                 if (turn == Player.Name.Player1)
                 {
@@ -93,14 +90,8 @@ namespace TicTacToe
             {
                 GameEnd = true;
                 GameStart = false;
-                ShowPlayerTurn($"The Winner is {result.Name}");
+                ShowPlayerTurn($"(: {turn} Wins :)");
             }
-
-        }
-
-        public Player.Name GetPlayerTurn()
-        {
-            return turn;
         }
 
         private int[] ParseCurrentPosition(string shapeName)
@@ -108,16 +99,16 @@ namespace TicTacToe
             if (shapeName == null) return null;
             int from = shapeName.IndexOf("_") + 1;
             int to = shapeName.LastIndexOf("_") + 1;
-            int x, y = 0;
-            int.TryParse(shapeName.Substring(from, (to - from - 1)), out x);
-            int.TryParse(shapeName.Substring(to), out y);
+            int.TryParse(shapeName.Substring(from, (to - from - 1)), out int x);
+            int.TryParse(shapeName.Substring(to), out int y);
             if (!(x >= 0 && x <= BoardSize && x >= 0 && y <= BoardSize)) return null;
             return new[] { x, y };
         }
 
-        private void ShowPlayerTurn(string winner = "")
+        private void ShowPlayerTurn(string text = null)
         {
-            playerTurn.Content = $"{turn} {winner}";
+            playerTurn.Text = string.IsNullOrWhiteSpace(text) ? 
+                $"Player turn: {turn}" : $"{text}";
         }
 
         private void CreateBoard(int boardSize)
@@ -127,7 +118,7 @@ namespace TicTacToe
                 Height = BrickSpace + (BrickSpace * boardSize) + (BrickSize * boardSize),
                 Width = BrickSpace + (BrickSpace * boardSize) + (BrickSize * boardSize),
                 Margin = new Thickness(0, 0, 0, 0),
-                Background = new SolidColorBrush(Colors.White),
+                Background = HexToSolidColor(BoardBackgroundColor),
             };
 
             for (int bx = 0; bx < boardSize; bx++)
@@ -140,11 +131,11 @@ namespace TicTacToe
                 {
                     Brick = new Rectangle
                     {
-                        Fill = new SolidColorBrush(Colors.Blue),
+                        Fill = HexToSolidColor(BrickFillColor),
                         Height = BrickSize,
                         Width = BrickSize,
                         Margin = new Thickness(10, 10, 0, 0),
-                        Stroke = new SolidColorBrush(Colors.Black),
+                        Stroke = HexToSolidColor(BrickBorderColor),
                         StrokeThickness = 3,
                         Name = $"Box_{bx}_{by}",
                     };
@@ -157,6 +148,11 @@ namespace TicTacToe
 
             boardStackPanel.Children.Clear();
             boardStackPanel.Children.Add(brickStackPanel);
+        }
+
+        private SolidColorBrush HexToSolidColor(string c)
+        {
+            return (SolidColorBrush)(new BrushConverter().ConvertFrom(c));
         }
     }
 }

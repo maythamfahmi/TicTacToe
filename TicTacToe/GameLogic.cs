@@ -8,7 +8,8 @@ namespace TicTacToe
         public Winner Check(Player.State[,] array, Player.State player)
         {
             var directions = new[] { "column", "row", "diagTopDown", "diagDownTop" };
-            Winner result = null;
+            Winner result = new Winner();
+            if (array == null) return result;
             foreach (var direction in directions)
             {
                 result = Check(array, player, direction);
@@ -21,10 +22,10 @@ namespace TicTacToe
         private Winner Check(Player.State[,] array, Player.State player, string direction)
         {
             var lineSize = (int)Math.Sqrt(array.Length);
-            var winnerInfo = new Winner(lineSize);
+            var result = new Winner(lineSize);
             var tmpResult = new string[lineSize, 1];
             var lineCheck = new Player.State[lineSize];
-            //todo: if players has not reach 3 selection just return
+            if (array.Length <= 2) return result;
             for (int j = 0; j < lineSize; j++)
             {
                 if (direction == "diagTopDown" || direction == "diagDownTop")
@@ -58,12 +59,12 @@ namespace TicTacToe
                 }
                 if (IsFound(lineCheck, player))
                 {
-                    winnerInfo.Name = Player.DefaultPlayers()[player];
-                    winnerInfo.Result = tmpResult;
+                    result.Name = Player.DefaultPlayers()[player];
+                    result.Result = tmpResult;
                     break;
                 }
             }
-            return winnerInfo;
+            return result;
         }
 
         private bool IsFound<T>(T[] array, T find)
