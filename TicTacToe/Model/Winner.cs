@@ -1,9 +1,14 @@
-﻿namespace TicTacToe
+﻿namespace TicTacToe.Model
 {
     public class Winner
     {
         public string Name { get; set; }
         public string[,] Result { get; set; }
+
+        public Winner()
+        {
+            Name = Player.Name.None.ToString();
+        }
 
         public Winner(int tileSize)
         {

@@ -6,37 +6,40 @@ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 xmlns:local="clr-namespace:TicTacToe"
 mc:Ignorable="d"
 ResizeMode="NoResize"
-Title="MainWindow" Height="600" Width="800">
-    
+Title="MainWindow" Height="768" Width="1024" x:ClassModifier="internal">
+
     <Grid>
-        <DockPanel Width="350" Height="350">
+        <Border BorderBrush="{x:Null}" Height="50" VerticalAlignment="Top">
+            <TextBlock Text="TicTacToe"
+                       Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" 
+                       HorizontalAlignment="Center" 
+                       FontSize="48" FontFamily="Rockwell Extra Bold" 
+                       TextWrapping="NoWrap" Width="318" TextAlignment="Center" />
+        </Border>
+        <DockPanel Width="450" Height="450">
             <StackPanel DockPanel.Dock="Top" Name="boardStackPanel" />
-            <StackPanel DockPanel.Dock="Bottom">
-                <Button Click="OnCreateNewGame" Content="New Game" FontSize="20" Height="50" Width="140" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FFF0F0F0" Margin="105,0" />
-            </StackPanel>
         </DockPanel>
-        
-        <Label Content="TicTacToe" HorizontalAlignment="Left" Margin="240,10,0,0" VerticalAlignment="Top" Height="75" Width="314" FontSize="48" FontFamily="Rockwell Extra Bold">
-            <Label.Foreground>
-                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
-            </Label.Foreground>
-        </Label>
-        <Label Content="Player 2" HorizontalAlignment="Left" Margin="609,110,0,0" VerticalAlignment="Top" Height="46" Width="134" FontSize="24" FontFamily="Rockwell Extra Bold">
-            <Label.Foreground>
-                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
-            </Label.Foreground>
-        </Label>
-        <Label Content="Player 1" HorizontalAlignment="Left" Margin="40,110,0,0" VerticalAlignment="Top" Height="46" Width="134" FontSize="24" FontFamily="Rockwell Extra Bold">
-            <Label.Foreground>
-                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
-            </Label.Foreground>
-        </Label>
-        <Image Name="player1" HorizontalAlignment="Left" Height="100" Margin="57,161,0,0" VerticalAlignment="Top" Width="100" Source="pack://siteoforigin:,,,/Resources/o.png"/>
-        <Image Name="player2" HorizontalAlignment="Left" Height="100" Margin="629,161,0,0" VerticalAlignment="Top" Width="100" Source="pack://siteoforigin:,,,/Resources/x.png"/>
-        <Label Name="playerTurn" Content="Trun: Player 1" HorizontalAlignment="Left" Margin="240,486,0,0" VerticalAlignment="Top" Height="75" Width="314" FontSize="24" FontFamily="Rockwell Extra Bold">
-            <Label.Foreground>
-                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
-            </Label.Foreground>
-        </Label>
+        <Border BorderBrush="{x:Null}" Height="73" VerticalAlignment="Center" Margin="0,588,0,78">
+            <TextBlock Name="playerTurn" Text="-" FontSize="28" FontFamily="Rockwell Extra Bold" 
+                       Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       TextWrapping="NoWrap" Width="998" TextAlignment="Center" Margin="10,20" />
+        </Border>
+        <Border BorderBrush="{x:Null}" Height="73" VerticalAlignment="Bottom">
+            <Button Content="New Game" Click="OnCreateNewGame" 
+                    FontSize="20" Height="50" Width="140" 
+                    VerticalAlignment="Center" HorizontalAlignment="Center" 
+                    Background="#FFF0F0F0" Margin="105,0" />
+        </Border>
+        <Border BorderBrush="{x:Null}" Height="551" VerticalAlignment="Bottom" Margin="10,0,883,78">
+            <Image Name="player1" HorizontalAlignment="Center" 
+                   Height="80" VerticalAlignment="Top" 
+                   Width="80" Source="pack://siteoforigin:,,,/Resources/o.png"/>
+        </Border>
+        <Border BorderBrush="{x:Null}" Height="551" VerticalAlignment="Bottom" Margin="883,0,10,78">
+            <Image Name="player2" HorizontalAlignment="Center" 
+                   Height="80" VerticalAlignment="Top" 
+                   Width="80" Source="pack://siteoforigin:,,,/Resources/x.png"/>
+        </Border>
     </Grid>
 </Window>
