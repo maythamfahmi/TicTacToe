@@ -59,10 +59,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="GameLogic.cs" />
-    <Compile Include="Player.cs" />
-    <Compile Include="Programdd.cs" />
-    <Compile Include="Winner.cs" />
+    <Compile Include="Algorithm\GameLogic.cs" />
+    <Compile Include="Model\Player.cs" />
+    <Compile Include="Model\Winner.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -102,12 +101,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\o.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\x.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="favicon.ico" />

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TicTacToe
+namespace TicTacToe.Model
 {
     public static class Player
     {

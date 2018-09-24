@@ -6,7 +6,7 @@ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 xmlns:local="clr-namespace:TicTacToe"
 mc:Ignorable="d"
 ResizeMode="NoResize"
-Title="MainWindow" Height="768" Width="1024">
+Title="MainWindow" Height="768" Width="1024" x:ClassModifier="internal">
 
     <Grid>
         <Border BorderBrush="{x:Null}" Height="50" VerticalAlignment="Top">

@@ -2,14 +2,14 @@
 using Shouldly;
 using NUnit.Framework;
 using System.Collections.Generic;
+using TicTacToe.Algorithm;
+using TicTacToe.Model;
 
 namespace TicTacToe.Test
 {
     [TestFixture]
     public class UnitTest1
     {
-        private GameLogic GameLogic = new GameLogic();
-
         [Test]
         public void WarmUp()
         {
@@ -19,7 +19,7 @@ namespace TicTacToe.Test
         [TestCaseSource("GameLogicTestCases")]
         public void TestGameLogic(GameLogicTestCase g)
         {
-            var result = new GameLogic().Check(g.BoardSize, g.ExpectedWinner);
+            var result = new GameLogic().CheckWinner(g.BoardSize, g.ExpectedWinner);
             Console.WriteLine(g.TestName);
             result.Name.ShouldBe(Player.DefaultPlayers()[g.ExpectedWinner]);
         }

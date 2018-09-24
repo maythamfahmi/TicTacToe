@@ -5,29 +5,31 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TicTacToe.Algorithm;
+using TicTacToe.Model;
 
 namespace TicTacToe
 {
+    /// <inheritdoc />
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    internal partial class MainWindow : Window
     {
-        private int BoardSize = 3;
-        private int BrickSize = 75;
-        private int BrickSpace = 10;
-        private bool GameStart = false;
-        private bool GameEnd = false;
-        private Player.Name turn;
+        private const int BoardSize = 3;
+        private const int BrickSize = 75;
+        private const int BrickSpace = 10;
+        private bool _gameStart;
+        private bool _gameEnd;
+        private Player.Name _turn;
+        private Player.State[,] _boardState;
         private Shape Brick { get; set; }
-        Player.State[,] boardState;
-                private string BoardBackgroundColor = "#FFFFFF";
-        private string BrickFillColor = "#FFFFFF";
-        private string BrickBorderColor = "#000000";
-        private BitmapImage empty = new BitmapImage(new Uri(@"C:\\dev\\Projects\\TicTacToe\\TicTacToe\\Resources\\empty.png"));
-        private BitmapImage x = new BitmapImage(new Uri(@"C:\\dev\\Projects\\TicTacToe\\TicTacToe\\Resources\\x.png"));
-        private BitmapImage o = new BitmapImage(new Uri(@"C:\\dev\\Projects\\TicTacToe\\TicTacToe\\Resources\\o.png"));
-        
+        private const string BoardBackgroundColor = "#FFFFFF";
+        private const string BrickFillColor = "#FFFFFF";
+        private const string BrickBorderColor = "#000000";
+        private readonly BitmapImage _x = new BitmapImage(new Uri(@"C:\\dev\\Projects\\TicTacToe\\TicTacToe\\Resources\\x.png"));
+        private readonly BitmapImage _o = new BitmapImage(new Uri(@"C:\\dev\\Projects\\TicTacToe\\TicTacToe\\Resources\\o.png"));
+
         public MainWindow()
         {
             InitializeComponent();
@@ -39,81 +41,84 @@ namespace TicTacToe
 
         private void OnCreateNewGame(object sender, RoutedEventArgs e)
         {
-            GameStart = true;
+            _gameStart = true;
             Init();
             ShowPlayerTurn();
         }
 
         private void Init()
         {
-            boardState = new Player.State[BoardSize, BoardSize];
+            _boardState = new Player.State[BoardSize, BoardSize];
             CreateBoard(BoardSize);
-            player1.Source = x;
-            player2.Source = o;
-            GameEnd = false;
-            turn = Player.Name.Player1;
+            player1.Source = _x;
+            player2.Source = _o;
+            _gameEnd = false;
+            _turn = Player.Name.Player1;
             ShowPlayerTurn("Click on Button and start New Game");
         }
 
-        void OnMouseButtonUp(object sender, MouseButtonEventArgs e)
+        private void OnMouseButtonUp(object sender, MouseButtonEventArgs e)
         {
             var shape = (Shape)sender;
-            if (!GameStart) return;
-            if (GameEnd) return;
+            if (!_gameStart) return;
+            if (_gameEnd) return;
 
             var pos = ParseCurrentPosition(shape.Name);
-            int i = pos[0];
-            int j = pos[1];
+            var i = pos[0];
+            var j = pos[1];
 
             if (HexToSolidColor(shape.Fill.ToString()).ToString() ==
                 HexToSolidColor(BrickFillColor).ToString())
             {
-                if (turn == Player.Name.Player1)
+                switch (_turn)
                 {
-                    shape.Fill = new ImageBrush(o);
-                    turn = Player.Name.Player2;
-                    boardState[i, j] = Player.State.O;
-                }
-                else if (turn == Player.Name.Player2)
-                {
-                    shape.Fill = new ImageBrush(x);
-                    turn = Player.Name.Player1;
-                    boardState[i, j] = Player.State.X;
+                    case Player.Name.Player1:
+                        shape.Fill = new ImageBrush(_o);
+                        _turn = Player.Name.Player2;
+                        _boardState[i, j] = Player.State.O;
+                        break;
+                    case Player.Name.Player2:
+                        shape.Fill = new ImageBrush(_x);
+                        _turn = Player.Name.Player1;
+                        _boardState[i, j] = Player.State.X;
+                        break;
+                    case Player.Name.None:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
-            var result = new GameLogic().Check(boardState, boardState[i, j]);
+            var result = new GameLogic().CheckWinner(_boardState, _boardState[i, j]);
 
             ShowPlayerTurn();
 
-            if (result.Name != Player.Name.None.ToString())
-            {
-                GameEnd = true;
-                GameStart = false;
-                ShowPlayerTurn($"(: {turn} Wins :)");
-            }
+            if (result.Name == Player.Name.None.ToString()) return;
+            _gameEnd = true;
+            _gameStart = false;
+            ShowPlayerTurn($"(: {_turn} Wins :)");
         }
 
-        private int[] ParseCurrentPosition(string shapeName)
+        private static int[] ParseCurrentPosition(string shapeName)
         {
             if (shapeName == null) return null;
-            int from = shapeName.IndexOf("_") + 1;
-            int to = shapeName.LastIndexOf("_") + 1;
-            int.TryParse(shapeName.Substring(from, (to - from - 1)), out int x);
-            int.TryParse(shapeName.Substring(to), out int y);
-            if (!(x >= 0 && x <= BoardSize && x >= 0 && y <= BoardSize)) return null;
-            return new[] { x, y };
+            var from = shapeName.IndexOf("_", StringComparison.Ordinal) + 1;
+            var to = shapeName.LastIndexOf("_", StringComparison.Ordinal) + 1;
+            int.TryParse(shapeName.Substring(from, (to - from - 1)), out var i);
+            int.TryParse(shapeName.Substring(to), out var j);
+            if (!(i >= 0 && i <= BoardSize && i >= 0 && j <= BoardSize)) return null;
+            return new[] { i, j };
         }
 
         private void ShowPlayerTurn(string text = null)
         {
-            playerTurn.Text = string.IsNullOrWhiteSpace(text) ? 
-                $"Player turn: {turn}" : $"{text}";
+            playerTurn.Text = string.IsNullOrWhiteSpace(text) ?
+                $"Player turn: {_turn}" : $"{text}";
         }
 
         private void CreateBoard(int boardSize)
         {
-            StackPanel brickStackPanel = new StackPanel
+            var brickStackPanel = new StackPanel
             {
                 Height = BrickSpace + (BrickSpace * boardSize) + (BrickSize * boardSize),
                 Width = BrickSpace + (BrickSpace * boardSize) + (BrickSize * boardSize),
@@ -121,13 +126,13 @@ namespace TicTacToe
                 Background = HexToSolidColor(BoardBackgroundColor),
             };
 
-            for (int bx = 0; bx < boardSize; bx++)
+            for (var bx = 0; bx < boardSize; bx++)
             {
-                StackPanel rowStackPanel = new StackPanel
+                var rowStackPanel = new StackPanel
                 {
                     Orientation = Orientation.Horizontal
                 };
-                for (int by = 0; by < boardSize; by++)
+                for (var by = 0; by < boardSize; by++)
                 {
                     Brick = new Rectangle
                     {
@@ -150,7 +155,7 @@ namespace TicTacToe
             boardStackPanel.Children.Add(brickStackPanel);
         }
 
-        private SolidColorBrush HexToSolidColor(string c)
+        private static SolidColorBrush HexToSolidColor(string c)
         {
             return (SolidColorBrush)(new BrushConverter().ConvertFrom(c));
         }
